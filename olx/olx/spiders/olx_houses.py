@@ -21,11 +21,11 @@ class OlxHousesSpider(scrapy.Spider):
             yield response.follow(href, self.parse)
 
     def parse_details(self, response):
-        tip = response.css("#breadcrumbTop .middle > ul > li:last-child > a::attr(title)").extract_first()  
+        tip = response.css("#breadcrumbTop .middle > ul > li > a::attr(title)").re("(.*(vanzare|inchiriat?).*)")[0]
         price = response.css('.price-label > strong::text').extract_first().replace(" ", "")
         attrs = {'url': response.url, 'text': response.css('#textContent>p::text').extract_first().strip(),
                 'title':  response.css('h1::text').extract_first().strip(),
-		'price': price,  'type': tip, 'date': today, 
+                'price': price,  'type': tip, 'date': today, 
                 'nr_anunt':  response.css('.offer-titlebox em small::text').re('\d+'), 
                 'adaugat_la': response.css('.offer-titlebox em::text').re('Adaugat (de pe telefon) +La (.*),') }
         for tr in response.css('.details').xpath('tr/td//tr'):
